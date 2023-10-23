@@ -49,6 +49,7 @@ class EcoSensor(SensorEntity):
         self._state_temp = None
         self._state_hum = None
         self._state_water = None
+        self._state_finger = None
 
     @property
     def name(self) -> str:
@@ -68,6 +69,7 @@ class EcoSensor(SensorEntity):
                 async with session.get(url) as response_temp:
                     if response_temp.status == 200:
                         _type = await response_temp.text()
+                        _LOGGER.info(f"type: {_type}")
                         if _type == "1":
                             """Update the sensor state."""
                             url_temp = f"http://{self._sensor['host']}/temp"
@@ -105,9 +107,18 @@ class EcoSensor(SensorEntity):
                             async with session.get(url_sensor) as response_water:
                                 if response_water.status == 200:
                                     self._state_water = await response_water.text()
-                                    _LOGGER.info(f"waetr updated: {self._state_water}")
+                                    _LOGGER.info(f"water updated: {self._state_water}")
                                 else:
                                     _LOGGER.error("Error retrieving water sensor: %d", response_water.status)
+                        elif _type == "4":
+                            self._state_water = None
+                            url_sensor = f"http://{self._sensor['host']}/finger"
+                            async with session.get(url_sensor) as response_finger:
+                                if response_finger.status == 200:
+                                    self._state_finger = await response_finger.text()
+                                    _LOGGER.info(f"finger updated: {self._state_finger}")
+                                else:
+                                    _LOGGER.error("Error retrieving fingerprint sensor: %d", response_finger.status)
                         else:
                             _LOGGER.error("Error retrieving the type: %d", response_temp.status)
             except requests.exceptions.RequestException as ex:
@@ -121,9 +132,14 @@ class EcoSensor(SensorEntity):
         if self._state_temp is not None and self._state_hum is not None:
             return f"Temp: {self._state_temp}°C, Hum: {self._state_hum}%"
         elif self._state_air is not None:
-            return f"Calidad del aire: {self._state_air}"
+            return self._state_air
         elif self._state_water is not None:
-            return f"humedad en analogico; {self._state_water}"
+            return self._state_water
+        elif self._state_finger is not None:
+            if self._state_finger != "-1":
+                return self._state_finger
+            else:
+                return "None"
         else:
             return "Unknown"
 
