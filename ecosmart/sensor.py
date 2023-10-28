@@ -50,6 +50,7 @@ class EcoSensor(SensorEntity):
         self._state_hum = None
         self._state_water = None
         self._state_finger = None
+        self._state_power = None
 
     @property
     def name(self) -> str:
@@ -111,7 +112,6 @@ class EcoSensor(SensorEntity):
                                 else:
                                     _LOGGER.error("Error retrieving water sensor: %d", response_water.status)
                         elif _type == "4":
-                            self._state_water = None
                             url_sensor = f"http://{self._sensor['host']}/finger"
                             async with session.get(url_sensor) as response_finger:
                                 if response_finger.status == 200:
@@ -119,6 +119,14 @@ class EcoSensor(SensorEntity):
                                     _LOGGER.info(f"finger updated: {self._state_finger}")
                                 else:
                                     _LOGGER.error("Error retrieving fingerprint sensor: %d", response_finger.status)
+                        elif _type == "5":
+                            url_sensor = f"http://{self._sensor['host']}/"
+                            async with session.get(url_sensor) as response_power:
+                                if response_finger.status == 200:
+                                    self._state_power = await response_power.text()
+                                    _LOGGER.info(f"power updated: {self._state_power}")
+                                else:
+                                    _LOGGER.error("Error retrieving power sensor: %d", response_power.status)
                         else:
                             _LOGGER.error("Error retrieving the type: %d", response_temp.status)
             except requests.exceptions.RequestException as ex:
@@ -140,6 +148,8 @@ class EcoSensor(SensorEntity):
                 return self._state_finger
             else:
                 return "None"
+        elif self._state_power is not None:
+            return self._state_power
         else:
             return "Unknown"
 
