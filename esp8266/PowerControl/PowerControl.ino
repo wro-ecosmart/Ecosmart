@@ -42,7 +42,7 @@ void handleRoot() {
 }
 
 void handleType() {
-  server.send(200, "text/plain", "3");
+  server.send(200, "text/plain", "5");
 }
 
 void loop() {
