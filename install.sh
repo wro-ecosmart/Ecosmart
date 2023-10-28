@@ -16,4 +16,4 @@ cp -r ./Ecosmart/* ./
 
 rm -rf ./Ecosmart
 
-echo "REINICIA HOME ASSISTANT"
+echo "REBOOT HOME ASSISTANT"
