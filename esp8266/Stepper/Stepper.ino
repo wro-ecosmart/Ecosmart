@@ -6,8 +6,8 @@ const int stepsPerRevolution = 300;  // Ajusta esto según el número de pasos p
 
 Stepper myStepper(stepsPerRevolution, 12, 14, 27, 26);
 
-char* ssid = "ECOSMART";      // Cambia "ECOSMART" al nombre de tu red Wi-Fi
-char* password = "netflix.com";  // Cambia "netflix.com" a tu contraseña Wi-Fi
+const char* ssid = "SSID";
+const char* password = "PASSWORD";
 
 WiFiServer server(80);
 
