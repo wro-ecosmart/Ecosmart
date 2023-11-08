@@ -42,8 +42,9 @@ void handleRoot() {
 void handleSetAngle() {
   if (server.hasArg("data")) {
     int angle = server.arg("data").toInt();
-    myservo.write(angle);
-    server.send(200, "text/plain", "Ángulo ajustado: " + String(angle));
+    int Aangle =  map(angle, 0, 100, 0, 180);
+    myservo.write(Aangle);
+    server.send(200, "text/plain", "Ángulo ajustado: " + String(Aangle));
   } else {
     server.send(400, "text/plain", "Solicitud incorrecta");
   }
